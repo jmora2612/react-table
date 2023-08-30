@@ -1,49 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
-import { fetchApi } from "./helpers/fetchApi";
+
 import { UsersList } from "./components/UsersList";
+import { useTableHook } from "./hooks/useTableHook";
 export const App = () => {
-  const [users, setUsers] = useState([]);
-  const first = useRef();
-  const [filters, setFilter] = useState(null);
-  const [country, setCountry] = useState(false);
-
-  const usersData = async () => {
-    const data = await fetchApi();
-    first.current = data;
-    setUsers(data);
-  };
-
-  const deletes = (email) => {
-    const filter = users.filter((el) => el.email !== email);
-    setUsers(filter);
-  };
-
-  const onReset = () => {
-    setUsers(first.current);
-  };
-
-  const filterValue = useMemo(() => {
-    console.log("filterValue");
-    return filters
-      ? users.filter((el) =>
-          el.location.country.toLowerCase().includes(filters.toLowerCase())
-        )
-      : users;
-  }, [users, filters]);
-
-  const sortCountry = useMemo(() => {
-    console.log("sortCountry", );
-    return country
-      ? filterValue.toSorted((a, b) =>
-          a.location.country.localeCompare(b.location.country)
-        )
-      : filterValue;
-  }, [filterValue, country]);
-
-  const countrys = () => {
-    setCountry((setState) => !setState);
-  };
+  const {
+    users,
+    usersData,
+    deletes,
+    onReset,
+    sortCountry,
+    countrys,
+    setFunctionFilter,
+    // fileInputRef
+  } = useTableHook();
 
   useEffect(() => {
     usersData(users);
@@ -61,7 +31,8 @@ export const App = () => {
             Restaurar estado inicial
           </button>
           <input
-            onChange={(event) => setFilter(event.target.value)}
+          // ref={fileInputRef}
+            onChange={(event) => setFunctionFilter(event.target.value)}
             type="text"
             placeholder="Filtrar por pais"
           />
@@ -77,9 +48,17 @@ export const App = () => {
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            {sortCountry?.map((el) => (
-              <UsersList key={el?.email} users={el} deletes={deletes} />
-            ))}
+            {sortCountry.length > 0 ? (
+              sortCountry?.map((el) => (
+                <UsersList key={el?.email} users={el} deletes={deletes} />
+              ))
+            ) : (
+              <tbody>
+              <tr>
+                <td colSpan="5">No existe registro</td>
+              </tr>
+              </tbody>
+            )}
           </table>
         </main>
       </div>
