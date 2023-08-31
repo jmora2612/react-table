@@ -32,7 +32,7 @@ export const App = () => {
           </button>
           <input
           // ref={fileInputRef}
-            onChange={(event) => setFunctionFilter(event.target.value)}
+            onChange={(event) => setFunctionFilter(event.value)}
             type="text"
             placeholder="Filtrar por pais"
           />
